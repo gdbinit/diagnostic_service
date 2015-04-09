@@ -29,3 +29,9 @@ Might contain small traces of bugs and other dangerous stuff. Don't use if aller
 Have fun,
 
 fG!
+
+Update:
+
+The KeyboardMapping vulnerability that Ian Beer's included exploit code uses should be finally patched in latest Mavericks patch 2015-004.
+
+Diagnostic services is what Apple called to the alleged backdoors presented at Hope'14 conference ;-).
