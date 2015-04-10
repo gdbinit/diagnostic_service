@@ -18,6 +18,8 @@ Can load the kernel extensions from local disk or remote http/https website. Lea
 The code contains Ian Beer's Mavericks exploit for privilege escalation. This means this whole code can work from unprivileged user. 
 The exploit still works as of Security Update 2015-001 (untested with 2015-002 but should also work).
 
+Now also includes the rootpipe exploit for Mavericks. Older versions also vulnerable but their exploit code not ported.
+
 Handle with care, you are solely responsible for your acts with this code ;-)
 
 Presented at CodeBlue 2014 and SyScan 2015. Greetings to both :-)
